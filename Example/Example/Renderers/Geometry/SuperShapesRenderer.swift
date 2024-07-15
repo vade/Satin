@@ -143,7 +143,8 @@ class SuperShapesRenderer: BaseRenderer {
             renderPassDescriptor: renderPassDescriptor,
             commandBuffer: commandBuffer,
             scene: scene,
-            camera: camera
+            camera: camera,
+            
         )
     }
 

@@ -1,34 +1,41 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Forge",
-        "repositoryURL": "https://github.com/Hi-Rez/Forge",
-        "state": {
-          "branch": "master",
-          "revision": "700e72f59a807577582194c93e0dcb5aa7d53e5d",
-          "version": null
-        }
-      },
-      {
-        "package": "Spectra",
-        "repositoryURL": "https://github.com/Hi-Rez/Spectra",
-        "state": {
-          "branch": "master",
-          "revision": "43a24736252863edfbde73e1d3754d7ecdcf46fe",
-          "version": null
-        }
-      },
-      {
-        "package": "Youi",
-        "repositoryURL": "https://github.com/Hi-Rez/Youi",
-        "state": {
-          "branch": "master",
-          "revision": "d1efe3424d2b8399101ce656828835f05ef43427",
-          "version": null
-        }
+  "pins" : [
+    {
+      "identity" : "forge",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Hi-Rez/Forge",
+      "state" : {
+        "branch" : "master",
+        "revision" : "700e72f59a807577582194c93e0dcb5aa7d53e5d"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "satin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Hi-Rez/Satin",
+      "state" : {
+        "revision" : "a4dab914abd9c9ba6be327ff94ce1433f588e6bc",
+        "version" : "2.3.0"
+      }
+    },
+    {
+      "identity" : "spectra",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Hi-Rez/Spectra",
+      "state" : {
+        "branch" : "master",
+        "revision" : "43a24736252863edfbde73e1d3754d7ecdcf46fe"
+      }
+    },
+    {
+      "identity" : "youi",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Hi-Rez/Youi",
+      "state" : {
+        "branch" : "master",
+        "revision" : "d1efe3424d2b8399101ce656828835f05ef43427"
+      }
+    }
+  ],
+  "version" : 2
 }

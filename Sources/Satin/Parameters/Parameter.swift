@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import Satin
 
 public protocol ParameterDelegate: AnyObject {
     func updated(parameter: Parameter)

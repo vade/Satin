@@ -8,33 +8,33 @@
 import Combine
 import Foundation
 
-public class GenericParameter<T: Codable>: ValueParameter, ObservableObject {
-    public var id: String = UUID().uuidString
+@Observable public class GenericParameter<T: Codable>: ValueParameter {
+    @ObservationIgnored public var id: String = UUID().uuidString
     
     public typealias ValueType = T
 
     // Delegate
-    public weak var delegate: ParameterDelegate?
+    @ObservationIgnored public weak var delegate: ParameterDelegate?
 
     // Getable Properties
-    public var type: ParameterType { .generic }
-    public var string: String { "generic" }
+    @ObservationIgnored public var type: ParameterType { .generic }
+    @ObservationIgnored public var string: String { "generic" }
 
     // Computed Properties
-    public var size: Int { return MemoryLayout<ValueType>.size }
-    public var stride: Int { return MemoryLayout<ValueType>.stride }
-    public var alignment: Int { return MemoryLayout<ValueType>.alignment }
-    public var count: Int { -1 }
+    @ObservationIgnored public var size: Int { return MemoryLayout<ValueType>.size }
+    @ObservationIgnored public var stride: Int { return MemoryLayout<ValueType>.stride }
+    @ObservationIgnored public var alignment: Int { return MemoryLayout<ValueType>.alignment }
+    @ObservationIgnored public var count: Int { -1 }
 
     // Setable Properties
-    public var controlType = ControlType.none
+    @ObservationIgnored public var controlType = ControlType.none
     public var label: String
 
-    public var description: String {
+    @ObservationIgnored public var description: String {
         "Label: \(label) type: \(string) value: \(value)"
     }
 
-    @Published public var value: ValueType
+    public var value: ValueType
 
     public subscript<T>(_: Int) -> T {
         get {
@@ -96,8 +96,8 @@ public class GenericParameter<T: Codable>: ValueParameter, ObservableObject {
 }
 
 public class GenericParameterWithMinMax<T: Codable>: GenericParameter<T> {
-    @Published public var min: ValueType
-    @Published public var max: ValueType
+    public var min: ValueType
+    public var max: ValueType
 
     private enum CodingKeys: String, CodingKey {
         case controlType

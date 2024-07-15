@@ -19,7 +19,7 @@ public protocol ParameterGroupDelegate: AnyObject {
     func cleared(group: ParameterGroup)
 }
 
-open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, ObservableObject {
+@Observable open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate {
     public let id: String = UUID().uuidString
 
     public var description: String {
@@ -30,8 +30,8 @@ open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, 
         return dsc
     }
 
-    @Published public var label = ""
-    @Published public private(set) var params: [Parameter] = [] {
+    public var label = ""
+    public private(set) var params: [Parameter] = [] {
         didSet {
             _updateSize = true
             _updateStride = true
@@ -41,7 +41,7 @@ open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, 
         }
     }
 
-    @Published public var paramsMap: [String: Parameter] = [:]
+    public var paramsMap: [String: Parameter] = [:]
     public weak var delegate: ParameterGroupDelegate? = nil
 
     deinit {
@@ -449,7 +449,7 @@ open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, 
         return source
     }
 
-    lazy var _data: UnsafeMutableRawPointer = {
+    @ObservationIgnored lazy var _data: UnsafeMutableRawPointer = {
         _dataAllocated = true
         return UnsafeMutableRawPointer.allocate(byteCount: size, alignment: alignment)
     }()
@@ -585,12 +585,13 @@ open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, 
     }
 
     public func updated(parameter: Parameter) {
-        objectWillChange.send()
+//        objectWillChange.send()
         _updateData = true
         delegate?.update(parameter: parameter, from: self)
     }
 }
 
+@available(macOS 14.0, *)
 extension ParameterGroup: Equatable {
     public static func == (lhs: ParameterGroup, rhs: ParameterGroup) -> Bool {
         return lhs.id == rhs.id
