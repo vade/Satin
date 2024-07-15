@@ -11,15 +11,15 @@ import Foundation
 import simd
 
 public protocol ParameterGroupDelegate: AnyObject {
-    func added(parameter: Parameter, from group: ParameterGroup)
-    func removed(parameter: Parameter, from group: ParameterGroup)
-    func update(parameter: Parameter, from group: ParameterGroup)
+    func added(parameter: any Parameter, from group: ParameterGroup)
+    func removed(parameter: any Parameter, from group: ParameterGroup)
+    func update(parameter: any Parameter, from group: ParameterGroup)
     func loaded(group: ParameterGroup)
     func saved(group: ParameterGroup)
     func cleared(group: ParameterGroup)
 }
 
-@Observable open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate {
+@Observable open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, Identifiable {
     public let id: String = UUID().uuidString
 
     public var description: String {
@@ -31,7 +31,7 @@ public protocol ParameterGroupDelegate: AnyObject {
     }
 
     public var label = ""
-    public private(set) var params: [Parameter] = [] {
+    public private(set) var params: [any Satin.Parameter] = [] {
         didSet {
             _updateSize = true
             _updateStride = true
@@ -41,7 +41,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         }
     }
 
-    public var paramsMap: [String: Parameter] = [:]
+    public var paramsMap: [String: any Parameter] = [:]
     public weak var delegate: ParameterGroupDelegate? = nil
 
     deinit {
@@ -53,18 +53,18 @@ public protocol ParameterGroupDelegate: AnyObject {
         }
     }
 
-    public init(_ label: String = "", _ parameters: [Parameter] = []) {
+    public init(_ label: String = "", _ parameters: [any Parameter] = []) {
         self.label = label
         append(parameters)
     }
 
-    public func append(_ parameters: [Parameter]) {
+    public func append(_ parameters: [any Parameter]) {
         for p in parameters {
             append(p)
         }
     }
 
-    public func append(_ param: Parameter) {
+    public func append(_ param: any Parameter) {
         if param.delegate == nil {
             param.delegate = self
         }
@@ -73,7 +73,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         delegate?.added(parameter: param, from: self)
     }
 
-    public func remove(_ param: Parameter) {
+    public func remove(_ param: any Parameter) {
         let key = param.label
         paramsMap.removeValue(forKey: key)
         for (i, p) in params.enumerated() {
@@ -247,7 +247,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         }
     }
 
-    func setParameterFrom(param: Parameter, setValue: Bool, setOptions: Bool, append: Bool = true) {
+    func setParameterFrom(param: any Parameter, setValue: Bool, setOptions: Bool, append: Bool = true) {
         let label = param.label
         if append, paramsMap[label] == nil {
             self.append(param)
@@ -369,15 +369,15 @@ public protocol ParameterGroupDelegate: AnyObject {
         }
     }
 
-    var _size = 0
-    var _stride = 0
-    var _alignment = 0
-    var _dataAllocated = false
-    var _reallocateData = false
-    var _updateSize = true
-    var _updateStride = true
-    var _updateAlignment = true
-    var _updateData = true
+    @ObservationIgnored var _size = 0
+    @ObservationIgnored var _stride = 0
+    @ObservationIgnored var _alignment = 0
+    @ObservationIgnored var _dataAllocated = false
+    @ObservationIgnored var _reallocateData = false
+    @ObservationIgnored var _updateSize = true
+    @ObservationIgnored var _updateStride = true
+    @ObservationIgnored var _updateAlignment = true
+    @ObservationIgnored var _updateData = true
 
     func updateSize() {
         var result = 0
@@ -394,7 +394,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         _size = result
     }
 
-    public var size: Int {
+    @ObservationIgnored public var size: Int {
         if _updateSize {
             updateSize()
             _updateSize = false
@@ -413,7 +413,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         _stride = result
     }
 
-    public var stride: Int {
+    @ObservationIgnored public var stride: Int {
         if _updateStride {
             updateStride()
             _updateStride = false
@@ -429,7 +429,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         _alignment = result
     }
 
-    public var alignment: Int {
+    @ObservationIgnored public var alignment: Int {
         if _updateAlignment {
             updateAlignment()
             _updateAlignment = false
@@ -437,7 +437,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         return _alignment
     }
 
-    public var structString: String {
+    @ObservationIgnored public var structString: String {
         var structName = label.replacingOccurrences(of: " ", with: "")
         structName = structName.camelCase
         structName = structName.prefix(1).capitalized + structName.dropFirst()
@@ -462,7 +462,7 @@ public protocol ParameterGroupDelegate: AnyObject {
         return UnsafeMutableRawPointer.allocate(byteCount: size, alignment: alignment)
     }
 
-    public var data: UnsafeRawPointer {
+    @ObservationIgnored public var data: UnsafeRawPointer {
         if _reallocateData {
             _data = allocateData()
             _reallocateData = false
@@ -580,18 +580,17 @@ public protocol ParameterGroupDelegate: AnyObject {
         }
     }
 
-    public func get(_ name: String) -> Parameter? {
+    public func get(_ name: String) -> (any Parameter)? {
         return paramsMap[name] ?? paramsMap[name.titleCase]
     }
 
-    public func updated(parameter: Parameter) {
+    public func updated(parameter: any Parameter) {
 //        objectWillChange.send()
         _updateData = true
         delegate?.update(parameter: parameter, from: self)
     }
 }
 
-@available(macOS 14.0, *)
 extension ParameterGroup: Equatable {
     public static func == (lhs: ParameterGroup, rhs: ParameterGroup) -> Bool {
         return lhs.id == rhs.id

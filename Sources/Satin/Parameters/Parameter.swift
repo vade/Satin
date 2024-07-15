@@ -11,10 +11,10 @@ import Foundation
 import Satin
 
 public protocol ParameterDelegate: AnyObject {
-    func updated(parameter: Parameter)
+    func updated(parameter: any Parameter)
 }
 
-public protocol Parameter: Codable, CustomStringConvertible, AnyObject {
+public protocol Parameter: Codable, CustomStringConvertible, AnyObject, Identifiable {
     var id: String { get }
     
     var type: ParameterType { get }
@@ -66,7 +66,7 @@ public enum ControlType: String, Codable {
 public enum ParameterType: String, Codable {
     case bool, uint32, int, int2, int3, int4, float, float2, float3, float4, double, string, packedfloat3, float2x2, float3x3, float4x4, generic
 
-    var metatype: Parameter.Type {
+    var metatype: any Parameter.Type {
         switch self {
         case .bool:
             return BoolParameter.self

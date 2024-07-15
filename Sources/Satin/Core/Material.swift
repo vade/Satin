@@ -633,7 +633,7 @@ open class Material: Codable, ObservableObject, ParameterGroupDelegate {
         }
     }
 
-    public func get(_ name: String) -> Parameter? {
+    public func get(_ name: String) -> (any Parameter)? {
         return parameters.get(name)
     }
 
@@ -684,12 +684,12 @@ open class Material: Codable, ObservableObject, ParameterGroupDelegate {
 }
 
 public extension Material {
-    func added(parameter _: Parameter, from _: ParameterGroup) {
+    func added(parameter _: any Parameter, from _: ParameterGroup) {
         uniformsNeedsUpdate = true
         objectWillChange.send()
     }
 
-    func removed(parameter _: Parameter, from _: ParameterGroup) {
+    func removed(parameter _: any Parameter, from _: ParameterGroup) {
         uniformsNeedsUpdate = true
         objectWillChange.send()
     }
@@ -706,7 +706,7 @@ public extension Material {
         objectWillChange.send()
     }
 
-    func update(parameter: Parameter, from: ParameterGroup) {
+    func update(parameter: any Parameter, from: ParameterGroup) {
         objectWillChange.send()
     }
 }

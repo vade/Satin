@@ -10,9 +10,9 @@ import Combine
 import Foundation
 
 open class AnyParameter: Codable {
-    public var base: Parameter
+    public var base: any Parameter
 
-    public init(_ base: Parameter) {
+    public init(_ base: any Parameter) {
         self.base = base
     }
 
