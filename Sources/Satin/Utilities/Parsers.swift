@@ -200,6 +200,58 @@ func parseParameters(source: String) -> ParameterGroup? {
             }
 
             if let vType = vType, let uiType = uiType, let uiDetails = uiDetails {
+                
+                if uiType == "xypad" {
+                    var success = false
+                    var subPattern = #" *?(-?\d*?\.?\d*?) *?, *?(-?\d*?\.?\d*?) *?, *?(-?\d*?\.?\d*?) *?, *(.*)"#
+                    var subRegex = NSRegularExpression()
+                    do {
+                        subRegex = try NSRegularExpression(pattern: subPattern, options: [])
+                    } catch {
+                        print(error)
+                    }
+
+                    var subRange = NSRange(uiDetails.startIndex ..< uiDetails.endIndex, in: uiDetails)
+                    var subMatches = subRegex.matches(in: uiDetails, options: [], range: subRange)
+
+                    if let subMatch = subMatches.first {
+                        var min: String?
+                        var max: String?
+                        var value: String?
+                        var label: String?
+                        
+                        if let r1 = Range(subMatch.range(at: 1), in: uiDetails) {
+                            min = String(uiDetails[r1])
+                        }
+                        
+                        if let r2 = Range(subMatch.range(at: 2), in: uiDetails) {
+                            max = String(uiDetails[r2])
+                        }
+                        
+                        if let r3 = Range(subMatch.range(at: 3), in: uiDetails) {
+                            value = String(uiDetails[r3])
+                        }
+                        
+                        if let r4 = Range(subMatch.range(at: 4), in: uiDetails) {
+                            label = String(uiDetails[r4])
+                        }
+                        
+                        if let min = min, let max = max, let value = value, let label = label {
+                            if let fMin = Float(min), let fMax = Float(max), let fValue = Float(value) {
+                                var parameter: (any Parameter)?
+                                if vType == "float2" {
+                                    parameter = Float2Parameter(label, .init(repeating: fValue), .init(repeating: fMin), .init(repeating: fMax), .xypad)
+                                }
+                                
+                                if let parameter = parameter {
+                                    params.append(parameter)
+                                    success = true
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 if uiType == "slider" {
                     var success = false
                     var subPattern = #" *?(-?\d*?\.?\d*?) *?, *?(-?\d*?\.?\d*?) *?, *?(-?\d*?\.?\d*?) *?, *(.*)"#
