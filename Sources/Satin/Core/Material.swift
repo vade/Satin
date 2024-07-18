@@ -17,6 +17,7 @@ public protocol MaterialDelegate: AnyObject {
 public struct DepthBias: Codable {
     var bias: Float
     var slope: Float
+
     var clamp: Float
 
     public init(bias: Float, slope: Float, clamp: Float) {
@@ -26,7 +27,7 @@ public struct DepthBias: Codable {
     }
 }
 
-open class Material: Codable, ObservableObject, ParameterGroupDelegate {
+@Observable open class Material: Codable, ParameterGroupDelegate {
     var prefix: String {
         var result = String(describing: type(of: self)).replacingOccurrences(of: "Material", with: "")
         if let bundleName = Bundle(for: type(of: self)).displayName, bundleName != result {
@@ -36,7 +37,13 @@ open class Material: Codable, ObservableObject, ParameterGroupDelegate {
         return result
     }
 
-    public lazy var label: String = prefix
+    @ObservationIgnored public lazy var label: String = prefix
+    {
+        didSet
+        {
+            self.parameters.label = label
+        }
+    }
 
     public var vertexDescriptor: MTLVertexDescriptor = SatinVertexDescriptor() {
         didSet {
@@ -109,18 +116,18 @@ open class Material: Codable, ObservableObject, ParameterGroupDelegate {
 
     public var uniforms: UniformBuffer?
 
-    public private(set) lazy var parameters: ParameterGroup = {
-        let params = ParameterGroup(label)
-        params.delegate = self
-        return params
-    }() {
+//    public private(set) lazy var parameters: ParameterGroup = {
+    public private(set) var parameters = ParameterGroup() {
+////        let params = ParameterGroup()
+////        return params
+//    }() {
         didSet {
             parameters.delegate = self
             uniformsNeedsUpdate = true
         }
     }
 
-    open var isClone = false
+    var isClone = false
     public weak var delegate: MaterialDelegate?
 
     public var pipeline: MTLRenderPipelineState? {
@@ -264,6 +271,7 @@ open class Material: Codable, ObservableObject, ParameterGroupDelegate {
         self.shader = shader
 
         setupParametersSubscriber()
+        
     }
 
     // MARK: - CodingKeys
@@ -686,28 +694,28 @@ open class Material: Codable, ObservableObject, ParameterGroupDelegate {
 public extension Material {
     func added(parameter _: any Parameter, from _: ParameterGroup) {
         uniformsNeedsUpdate = true
-        objectWillChange.send()
+//        objectWillChange.send()
     }
 
     func removed(parameter _: any Parameter, from _: ParameterGroup) {
         uniformsNeedsUpdate = true
-        objectWillChange.send()
+//        objectWillChange.send()
     }
 
     func loaded(group _: ParameterGroup) {
         uniformsNeedsUpdate = true
-        objectWillChange.send()
+//        objectWillChange.send()
     }
 
     func saved(group _: ParameterGroup) {}
 
     func cleared(group _: ParameterGroup) {
         uniformsNeedsUpdate = true
-        objectWillChange.send()
+//        objectWillChange.send()
     }
 
     func update(parameter: any Parameter, from: ParameterGroup) {
-        objectWillChange.send()
+//        objectWillChange.send()
     }
 }
 
@@ -716,7 +724,7 @@ public extension Material {
         parameters.setFrom(newParameters)
         parameters.label = newParameters.label
         uniformsNeedsUpdate = true
-        objectWillChange.send()
+//        objectWillChange.send()
         delegate?.updated(material: self)
     }
 }

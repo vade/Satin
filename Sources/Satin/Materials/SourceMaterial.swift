@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class SourceMaterial: Material {
+@Observable open class SourceMaterial: Material {
     public enum CodingKeys: String, CodingKey {
         case pipelineURL
     }
