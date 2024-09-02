@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-@Observable public class GenericParameter<T: Codable>: ValueParameter {
+@Observable open class GenericParameter<T: Codable>: ValueParameter {
     @ObservationIgnored public var id: String = UUID().uuidString
     
     public typealias ValueType = T
@@ -95,7 +95,7 @@ import Foundation
     }
 }
 
-public class GenericParameterWithMinMax<T: Codable>: GenericParameter<T> {
+open class GenericParameterWithMinMax<T: Codable>: GenericParameter<T> {
     public var min: ValueType
     public var max: ValueType
 

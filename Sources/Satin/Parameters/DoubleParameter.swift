@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class DoubleParameter: GenericParameterWithMinMax<Double> {
+open class DoubleParameter: GenericParameterWithMinMax<Double> {
     override public var type: ParameterType { .double }
     override public var string: String { "double" }
     override public var count: Int { 1 }
