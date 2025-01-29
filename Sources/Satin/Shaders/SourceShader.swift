@@ -26,6 +26,8 @@ open class SourceShader: Shader {
             }
         }
     }
+    
+    public var shaderSourceDidUpdate: (() -> Void)?
 
     open var sourceNeedsUpdate = true {
         didSet {
@@ -190,12 +192,13 @@ open class SourceShader: Shader {
             pipeline = nil
         }
 
+        self.shaderSourceDidUpdate?()
         libraryNeedsUpdate = false
     }
 
     open func setupShaderSource() -> String? {
         var result: String?
-
+        
         if let pipelineURL = pipelineURL {
             do {
                 result = try compiler.parse(pipelineURL)
@@ -213,6 +216,8 @@ open class SourceShader: Shader {
                 print("\(label) Shader: \(error.localizedDescription)")
             }
         }
+        
+        self.shaderSourceDidUpdate?()
         return result
     }
 
