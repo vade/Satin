@@ -22,6 +22,8 @@ public protocol ParameterGroupDelegate: AnyObject {
 @Observable open class ParameterGroup: Codable, CustomStringConvertible, ParameterDelegate, Identifiable {
     public let id: String = UUID().uuidString
 
+    
+    
     public var description: String {
         var dsc = "\(type(of: self)): \(label)\n"
         for param in params {
@@ -449,6 +451,10 @@ public protocol ParameterGroupDelegate: AnyObject {
         return source
     }
 
+    // Lock around concurrent access to param data through
+    // Parameter Group
+    private let dataLock = NSRecursiveLock()
+    
     @ObservationIgnored lazy var _data: UnsafeMutableRawPointer = {
         _dataAllocated = true
         return UnsafeMutableRawPointer.allocate(byteCount: size, alignment: alignment)
@@ -463,6 +469,9 @@ public protocol ParameterGroupDelegate: AnyObject {
     }
 
     @ObservationIgnored public var data: UnsafeRawPointer {
+        dataLock.lock()
+        defer { dataLock.unlock() }
+
         if _reallocateData {
             _data = allocateData()
             _reallocateData = false
@@ -475,6 +484,9 @@ public protocol ParameterGroupDelegate: AnyObject {
     }
 
     func updateData() {
+        dataLock.lock()
+        defer { dataLock.unlock() }
+
         var pointer = _data
         var offset = 0
         for param in params {
